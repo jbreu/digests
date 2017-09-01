@@ -1,0 +1,13 @@
+Guten Tag {USERNAME},
+
+hiermit werden Sie darüber informiert, dass ein Administator von {FORUM_NAME} Sie für den Erhalt von Rückblicks-Emails eingetragen hat:
+
+{DIGESTS_TYPE} {DIGESTS_FORMAT}
+
+Falls Sie keine Rückblicke erhalten möchten, können Sie sie über Ihre Profileinstellungen deaktivieren. Soweit Sie im Forum angemeldet sind, können Sie den folgenden Link verwenden:
+
+{DIGESTS_UCP_LINK}
+
+Mit freundlichen Grüßen,
+
+das {FORUM_NAME} Administrationsteam

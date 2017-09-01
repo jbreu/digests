@@ -1,0 +1,9 @@
+Guten Tag {USERNAME},
+
+hiermit werden Sie darüber informiert, dass ein Administor von {FORUM_NAME} Ihre Rückblicks-Einstellungen bearbeitet hat. Um Ihre neuen Einstellungen zu betrachten, verwenden Sie bitte den folgenden Link:
+
+{DIGESTS_UCP_LINK}
+
+Mit freundlichen Grüßen,
+
+das {FORUM_NAME} Administrationsteam

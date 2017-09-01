@@ -1,0 +1,7 @@
+Guten Tag {USERNAME},
+
+hiermit werden Sie darüber informiert, dass ein Administator von {FORUM_NAME} Ihre Rückblicke deaktiviert hat.
+
+Mit freundlichen Grüßen,
+
+das {FORUM_NAME} Administrationsteam
