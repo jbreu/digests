@@ -41,7 +41,7 @@ $lang = array_merge($lang, array(
 	'DIGESTS_DELIMITER'					=> ' :: ', // Used to help show the hierarchy of forum names from the index on down
 	'DIGESTS_DISABLED_MESSAGE'			=> 'Um Felder zu aktivieren, wählen Sie Basics und einen Rückblickstyp',
 	'DIGESTS_DISCLAIMER'				=> 'Dieser Rückblick wird den registrierten Mitgliedern des <a href="%1$s">%2$s</a> gesendet. Sie können Ihre Abonnements im <a href="%1$sucp.%3$s">User Control Panel</a> verwalten. Wenn Sie Fragen oder Anmerkungen zu Ihren Rückblicken haben, wenden Sie sich bitte an den <a href="mailto:%4$s?subject=Rückblick">%2$s Webmaster</a>.',
-	'DIGESTS_EXPLANATION'				=> 'Rückblicke sind Email-Zusammenfassung von Beiträgen, welche Ihnen regelmäßig zugesendet werden. Rückblicke werden täglich, wöchentlich oder monatlich zu einem bestimmten Tag und Zeitpunkt gesendet. Sie können Rückblicke für alle Forenbereiche, auf welche Sie lesenden Zugriff haben, abonnieren. Sie können Ihr Abonnement jederzeit beenden, indem Sie diese Seite besuchen. Die meisten Benutzer halten Rückblicke für sehr sinnvoll. Wir empfehlen Ihnen, Sie auszuprobieren!',
+	'DIGESTS_EXPLANATION'				=> 'Rückblicke sind Email-Zusammenfassungen von Beiträgen, welche Ihnen regelmäßig zugesendet werden. Rückblicke werden täglich, wöchentlich oder monatlich zu einem bestimmten Tag und Zeitpunkt gesendet. Sie können Rückblicke für alle Forenbereiche, auf welche Sie lesenden Zugriff haben, abonnieren. Sie können Ihr Abonnement jederzeit beenden, indem Sie diese Seite besuchen. Die meisten Benutzer halten Rückblicke für sehr sinnvoll. Wir empfehlen Ihnen, Sie auszuprobieren!',
 	'DIGESTS_FILTER_ERROR'				=> 'Der Rückblick-Mailer wurde mit ungültigem user_digest_filter_type = %s aufgerufen',
 	'DIGESTS_FILTER_FOES'				=> 'Entferne Beiträge meiner Gegner',
 	'DIGESTS_FILTER_TYPE'				=> 'Beitragstypen im Rückblick',
@@ -61,7 +61,7 @@ $lang = array_merge($lang, array(
 	'DIGESTS_FREQUENCY'					=> 'Gewünschter Rückblicks-Typ',
 	'DIGESTS_FREQUENCY_EXPLAIN'			=> 'Wöchentliche Rückblicke werden %s versandt. Monatliche Rückblicke werden am ersten Tag des Monats versandt. Der Wochentag wird anhand der Coordinated Universal Time (UTC) bestimmt.',
 	'DIGESTS_FREQUENCY_SHORT'			=> 'Rückblicks-Typ',
-	'DIGESTS_HOURS_ABBREVIATION' 		=> ' h',	// see: http://www.scienceeditingexperts.com/which-is-the-correct-abbreviation-for-hours-2h-2-h-2hs-2-hs-2hrs-or-2-hrs, DIGESTS_AM and DIGESTS_PM are used instead if specified in user_dateformat
+	'DIGESTS_HOURS_ABBREVIATION' 		=> ' Uhr',	// see: http://www.scienceeditingexperts.com/which-is-the-correct-abbreviation-for-hours-2h-2-h-2hs-2-hs-2hrs-or-2-hrs, DIGESTS_AM and DIGESTS_PM are used instead if specified in user_dateformat
 	'DIGESTS_INTRODUCTION' 				=> 'Hier ist der letzte Rückblick des %s-Forums. Antworten Sie <em>nicht</em> auf diese Email, um Beiträgen oder persönlichen Nachrichten zu antworten. Bitte melden Sie sich im Forum an, um an Diskussionen teilzunehmen! (Falls das Format des Rückblicks unzureichend ist, stellen Sie sicher dass alle Email-Inhalte geladen werden.)',
 	'DIGESTS_JUMP_TO_MSG'				=> 'Nachrichten-ID',
 	'DIGESTS_JUMP_TO_POST'				=> 'Beitrags-ID',
