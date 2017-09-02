@@ -67,7 +67,6 @@ $lang = array_merge($lang, array(
 	'DIGESTS_EXCLUDE_FORUMS'								=> 'Always exclude these forums',
 	'DIGESTS_EXCLUDE_FORUMS_EXPLAIN'						=> 'Enter the forum_ids for forums that must never appear in a digest. Separate the forum_ids with commas. If set to 0, no forums have to be excluded. To determine the forum_ids, when browsing a forum observe the &ldquo;f&rdquo; parameter on the URL field. This is the forum_id. Example: http://www.example.com/phpBB3/viewforum.php?f=1. Do not use forum_ids that correspond to categories. <i>This setting is ignored if bookmarked topics only are requested by a subscriber.</i>',
 	'DIGESTS_EXPAND'										=> 'Expand',
-	'DIGESTS_FREQUENCY_EXPLAIN'								=> 'Weekly digests are sent on ' . $weekdays[$config['phpbbservices_digests_weekly_digest_day']] . '. Monthly digests are sent on the first of the month. Coordinated Universal Time (UTC) is used for determining the day of the week.',
 	'DIGESTS_FORMAT_FOOTER' 								=> 'Digest format',
 	'DIGESTS_FROM_EMAIL_ADDRESS'							=> 'From email address',
 	'DIGESTS_FROM_EMAIL_ADDRESS_EXPLAIN'					=> 'When users receive a digest, this email address will appear in the FROM field. If left blank it will default to your board&rsquo;s email contract address. Use caution if using an email address with a domain other than the one the digest is hosted on, as your mail server or the user&rsquo;s email server may interpret the email as spam.',
