@@ -39,7 +39,7 @@ $lang = array_merge($lang, array(
 	'DIGESTS_DAILY'						=> 'Täglich',
 	'DIGESTS_DATE'						=> 'Datum',
 	'DIGESTS_DELIMITER'					=> ' :: ', // Used to help show the hierarchy of forum names from the index on down
-	'DIGESTS_DISABLED_MESSAGE'			=> 'Um Felder zu aktivieren, wählen Sie Basics und einen Rückblickstyp',
+	'DIGESTS_DISABLED_MESSAGE'			=> 'Um Felder zu aktivieren, wählen Sie Grundeinstellungen und einen Rückblickstyp',
 	'DIGESTS_DISCLAIMER'				=> 'Dieser Rückblick wird den registrierten Mitgliedern des <a href="%1$s">%2$s</a> gesendet. Sie können Ihre Abonnements im <a href="%1$sucp.%3$s">User Control Panel</a> verwalten. Wenn Sie Fragen oder Anmerkungen zu Ihren Rückblicken haben, wenden Sie sich bitte an den <a href="mailto:%4$s?subject=Rückblick">%2$s Webmaster</a>.',
 	'DIGESTS_EXPLANATION'				=> 'Rückblicke sind Email-Zusammenfassungen von Beiträgen, welche Ihnen regelmäßig zugesendet werden. Rückblicke werden täglich, wöchentlich oder monatlich zu einem bestimmten Tag und Zeitpunkt gesendet. Sie können Rückblicke für alle Forenbereiche, auf welche Sie lesenden Zugriff haben, abonnieren. Sie können Ihr Abonnement jederzeit beenden, indem Sie diese Seite besuchen. Die meisten Benutzer halten Rückblicke für sehr sinnvoll. Wir empfehlen Ihnen, Sie auszuprobieren!',
 	'DIGESTS_FILTER_ERROR'				=> 'Der Rückblick-Mailer wurde mit ungültigem user_digest_filter_type = %s aufgerufen',
@@ -153,7 +153,7 @@ $lang = array_merge($lang, array(
 	'UCP_DIGESTS'								=> 'Rückblicke',
 	'UCP_DIGESTS_ADDITIONAL_CRITERIA'			=> 'Zusätzliche Kriterien',
 	'UCP_DIGESTS_ADDITIONAL_CRITERIA_OPTIONS'	=> 'Zusätzliche Kriterien einstellen',
-	'UCP_DIGESTS_BASICS'						=> 'Basics',
+	'UCP_DIGESTS_BASICS'						=> 'Grundeinstellungen',
 	'UCP_DIGESTS_BASICS_OPTIONS'				=> 'Grundlegende Einstellungen',
 	'UCP_DIGESTS_FORUMS_SELECTION'				=> 'Forenauswahl',
 	'UCP_DIGESTS_FORUMS_SELECTION_OPTIONS'		=> 'Forenauswahl einstellen',
