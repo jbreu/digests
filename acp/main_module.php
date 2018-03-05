@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB Extension - Digests
-* @copyright (c) 2017 Mark D. Hamill (mark@phpbbservices.com)
+* @copyright (c) 2018 Mark D. Hamill (mark@phpbbservices.com)
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -59,7 +59,7 @@ class main_module
 
 		$this->language->add_lang(array('acp/info_acp_common', 'acp/common'), 'phpbbservices/digests');
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = ($this->request->is_set_post('submit')) ? true : false;
 
 		$form_key = 'phpbbservices/digests';
 		add_form_key($form_key);
@@ -77,7 +77,7 @@ class main_module
 				$display_vars = array(
 					'title'	=> 'ACP_DIGESTS_GENERAL_SETTINGS',
 					'vars'	=> array(
-						'legend1'								=> 'ACP_DIGESTS_GENERAL_SETTINGS',
+						'legend1'											=> '',
 						'phpbbservices_digests_enable_log'					=> array('lang' => 'DIGESTS_ENABLE_LOG',						'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'phpbbservices_digests_show_email'					=> array('lang' => 'DIGESTS_SHOW_EMAIL',						'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'phpbbservices_digests_enable_auto_subscriptions'	=> array('lang' => 'DIGESTS_ENABLE_AUTO_SUBSCRIPTIONS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -106,7 +106,7 @@ class main_module
 				$display_vars = array(
 					'title'	=> 'ACP_DIGESTS_USER_DEFAULT_SETTINGS',
 					'vars'	=> array(						
-						'legend1'											=> 'ACP_DIGESTS_USER_DEFAULT_SETTINGS',
+						'legend1'											=> '',
 						'phpbbservices_digests_user_digest_registration'	=> array('lang' => 'DIGESTS_USER_DIGESTS_REGISTRATION',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'phpbbservices_digests_user_digest_type'			=> array('lang' => 'DIGESTS_FREQUENCY',					'validate' => 'string',	'type' => 'select', 'method' => 'digest_type_select', 'explain' => true),
 						'phpbbservices_digests_user_digest_format'			=> array('lang' => 'DIGESTS_FORMAT_STYLING',			'validate' => 'string',	'type' => 'select', 'method' => 'digest_style_select', 'explain' => true),
@@ -135,11 +135,11 @@ class main_module
 				$display_vars = array(
 					'title'	=> 'ACP_DIGESTS_EDIT_SUBSCRIBERS',
 					'vars'	=> array(
-						'legend1'											=> 'ACP_DIGESTS_EDIT_SUBSCRIBERS',
+						'legend1'											=> '',
 					)
 				);
 
-				// Grab some URL parameters
+				// Grab some URL parameters that are used in sorting and filtering
 				$member = $this->request->variable('member', '', true);
 				$start = $this->request->variable('start', 0);
 				$subscribe = $this->request->variable('subscribe', 'a', true);
@@ -150,7 +150,7 @@ class main_module
 				$this->template->assign_vars(array(
 					'L_DIGESTS_HOUR_SENT'               			=> $this->language->lang('DIGESTS_HOUR_SENT', $my_time_zone),
 					'L_DIGESTS_BASED_ON'							=> $this->language->lang('DIGESTS_BASED_ON', $my_time_zone),
-					'S_EDIT_SUBSCRIBERS'							=> true,
+					'S_EDIT_SUBSCRIBERS'							=> true,	// In this module
 				));
 
 				// Set up subscription filter				
@@ -249,7 +249,7 @@ class main_module
 						$ascending_selected = ' selected="selected"';
 					break;
 				}
-				
+
 				// Set up member search SQL
 				$match_any_chars = $this->db->get_any_char();
 				$member_sql = ($member <> '') ? " username_clean " . $this->db->sql_like_expression($match_any_chars . utf8_case_fold_nfc($member) . $match_any_chars) . " AND " : '';
@@ -276,8 +276,8 @@ class main_module
 				$this->db->sql_freeresult($result);
 				
 				// Create pagination logic
-				$this->u_action = append_sid("index.$this->phpEx?i=-phpbbservices-digests-acp-main_module&amp;mode=digests_edit_subscribers&amp;sortby=$sortby&amp;subscribe=$subscribe");
-				$this->pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $total_users, $this->config['phpbbservices_digests_users_per_page'], $start);
+				$pagination_url = append_sid("index.$this->phpEx?i=-phpbbservices-digests-acp-main_module&amp;mode=digests_edit_subscribers&amp;sortby=$sortby&amp;subscribe=$subscribe");
+				$this->pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_users, $this->config['phpbbservices_digests_users_per_page'], $start);
 								
 				// Stealing some code from my Smartfeed extension so I can get a list of forums that a particular user can access
 				
@@ -349,12 +349,13 @@ class main_module
 					),
 				
 					'WHERE'		=> "$subscribe_sql $member_sql user_type <> " . USER_IGNORE,
-					
+
 					'ORDER_BY'	=> sprintf($sort_by_sql, $order_by_sql, $order_by_sql),
 				);
 
 				$sql = $this->db->sql_build_query('SELECT', $sql_array);
 				$result = $this->db->sql_query_limit($sql, $this->config['phpbbservices_digests_users_per_page'], $start);
+
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					
@@ -406,29 +407,28 @@ class main_module
 					}
 					
 					// Calculate a digest send hour in administrator's time zone
-					$send_hour_admin_offset = str_replace('.',':', floor($row['user_digest_send_hour_gmt']) + $my_time_zone);
+					$send_hour_admin_offset = floor($row['user_digest_send_hour_gmt']) + $my_time_zone;
 					$send_hour_admin_offset = $this->helper->check_send_hour($send_hour_admin_offset);
 
 					// Create an array of UTC offsets from board time zone. Also create the display hour format.
-					$admin_hour_offset = array();
+					$hour_utc = array();
 					$display_hour = array();
+
 					for($i=0; $i<24; $i++)
 					{
-						if ($i < 0)
+						if (($i - $my_time_zone) < 0)
 						{
-							$admin_hour_offset[$i] = $i - $my_time_zone + 24;
-							$display_hour[$i] = $this->helper->make_hour_string($i - $my_time_zone + 24, $this->user->data['user_dateformat']);
+							$hour_utc[$i] = $i - $my_time_zone + 24;
 						}
-						else if ($i > 23)
+						else if (($i - $my_time_zone) > 23)
 						{
-							$admin_hour_offset[$i] = $i - $my_time_zone - 24;
-							$display_hour[$i] = $this->helper->make_hour_string($i - $my_time_zone - 24, $this->user->data['user_dateformat']);
+							$hour_utc[$i] = $i - $my_time_zone - 24;
 						}
 						else
 						{
-							$admin_hour_offset[$i] = $i - $my_time_zone;
-							$display_hour[$i] = $this->helper->make_hour_string($i, $this->user->data['user_dateformat']);
+							$hour_utc[$i] = $i - $my_time_zone;
 						}
+						$display_hour[$i] = $this->helper->make_hour_string($i, $this->user->data['user_dateformat']);
 					}
 
 					$sql_array = array(
@@ -456,30 +456,30 @@ class main_module
 						'1ST'								=> ($row['user_digest_filter_type'] == constants::DIGESTS_FIRST),
 						'ALL'								=> ($row['user_digest_filter_type'] == constants::DIGESTS_ALL),
 						'BM'								=> ($row['user_digest_filter_type'] == constants::DIGESTS_BOOKMARKS),
-						'BOARD_OFFSET_0'					=> $admin_hour_offset[0],
-						'BOARD_OFFSET_1'					=> $admin_hour_offset[1],
-						'BOARD_OFFSET_2'					=> $admin_hour_offset[2],
-						'BOARD_OFFSET_3'					=> $admin_hour_offset[3],
-						'BOARD_OFFSET_4'					=> $admin_hour_offset[4],
-						'BOARD_OFFSET_5'					=> $admin_hour_offset[5],
-						'BOARD_OFFSET_6'					=> $admin_hour_offset[6],
-						'BOARD_OFFSET_7'					=> $admin_hour_offset[7],
-						'BOARD_OFFSET_8'					=> $admin_hour_offset[8],
-						'BOARD_OFFSET_9'					=> $admin_hour_offset[9],
-						'BOARD_OFFSET_10'					=> $admin_hour_offset[10],
-						'BOARD_OFFSET_11'					=> $admin_hour_offset[11],
-						'BOARD_OFFSET_12'					=> $admin_hour_offset[12],
-						'BOARD_OFFSET_13'					=> $admin_hour_offset[13],
-						'BOARD_OFFSET_14'					=> $admin_hour_offset[14],
-						'BOARD_OFFSET_15'					=> $admin_hour_offset[15],
-						'BOARD_OFFSET_16'					=> $admin_hour_offset[16],
-						'BOARD_OFFSET_17'					=> $admin_hour_offset[17],
-						'BOARD_OFFSET_18'					=> $admin_hour_offset[18],
-						'BOARD_OFFSET_19'					=> $admin_hour_offset[19],
-						'BOARD_OFFSET_20'					=> $admin_hour_offset[20],
-						'BOARD_OFFSET_21'					=> $admin_hour_offset[21],
-						'BOARD_OFFSET_22'					=> $admin_hour_offset[22],
-						'BOARD_OFFSET_23'					=> $admin_hour_offset[23],
+						'BOARD_OFFSET_0'					=> $hour_utc[0],
+						'BOARD_OFFSET_1'					=> $hour_utc[1],
+						'BOARD_OFFSET_2'					=> $hour_utc[2],
+						'BOARD_OFFSET_3'					=> $hour_utc[3],
+						'BOARD_OFFSET_4'					=> $hour_utc[4],
+						'BOARD_OFFSET_5'					=> $hour_utc[5],
+						'BOARD_OFFSET_6'					=> $hour_utc[6],
+						'BOARD_OFFSET_7'					=> $hour_utc[7],
+						'BOARD_OFFSET_8'					=> $hour_utc[8],
+						'BOARD_OFFSET_9'					=> $hour_utc[9],
+						'BOARD_OFFSET_10'					=> $hour_utc[10],
+						'BOARD_OFFSET_11'					=> $hour_utc[11],
+						'BOARD_OFFSET_12'					=> $hour_utc[12],
+						'BOARD_OFFSET_13'					=> $hour_utc[13],
+						'BOARD_OFFSET_14'					=> $hour_utc[14],
+						'BOARD_OFFSET_15'					=> $hour_utc[15],
+						'BOARD_OFFSET_16'					=> $hour_utc[16],
+						'BOARD_OFFSET_17'					=> $hour_utc[17],
+						'BOARD_OFFSET_18'					=> $hour_utc[18],
+						'BOARD_OFFSET_19'					=> $hour_utc[19],
+						'BOARD_OFFSET_20'					=> $hour_utc[20],
+						'BOARD_OFFSET_21'					=> $hour_utc[21],
+						'BOARD_OFFSET_22'					=> $hour_utc[22],
+						'BOARD_OFFSET_23'					=> $hour_utc[23],
 						'DIGEST_MAX_SIZE' 					=> $row['user_digest_max_display_words'],
 						'DISPLAY_HOUR_0'					=> $display_hour[0],
 						'DISPLAY_HOUR_1'					=> $display_hour[1],
@@ -632,7 +632,7 @@ class main_module
 						
 						$current_level = 0;			// How deeply nested are we at the moment
 						$parent_stack = array();	// Holds a stack showing the current parent_id of the forum
-						$parent_stack[] = 0;		// 0, the first value in the stack, represents the <div_0> element, a container holding all the categories and forums in the template
+						$parent_stack[] = 0;		// 0, the first value in the stack, represents the id=div_0 element, a container holding all the categories and forums in the template
 						
 						while ($row2 = $this->db->sql_fetchrow($result2))
 						{
@@ -672,7 +672,7 @@ class main_module
 							
 							// This code prints the forum or category, which will exist inside the previously created <div> block
 							
-							// Check this forum's checkbox? Only if they have forum subscriptions
+							// Check this forum's checkbox? Only if they have forum subscriptions.
 							if (!$all_by_default)
 							{
 								$check = false;
@@ -739,7 +739,7 @@ class main_module
 				$this->template->assign_vars(array(
 					'L_DIGESTS_HOUR_SENT'               		=> $this->language->lang('DIGESTS_HOUR_SENT', $my_time_zone),
 					'S_BALANCE_LOAD'							=> true,
-					'S_DIGESTS_AVERAGE'							=> $avg_per_hour,
+					'S_DIGESTS_AVERAGE'							=> '<strong>' . $avg_per_hour . '</strong>',
 				));
 
 				$sql_array = array(
@@ -807,33 +807,16 @@ class main_module
 					}
 
 					$daily_subscribers_str = (count($daily_subscribers) > 0 ) ? implode($this->language->lang('DIGESTS_COMMA'), $daily_subscribers) : '';
-					$weekly_subscribers_str = (count($weekly_subscribers) > 0 ) ? '<em>' . implode($this->language->lang('DIGESTS_COMMA'), $weekly_subscribers) . '</em>': '';
-					$monthly_subscribers_str = (count($monthly_subscribers) > 0 ) ? '<strong>' . implode($this->language->lang('DIGESTS_COMMA'), $monthly_subscribers) . '</strong>': '';
-
-					// Comma separate the digest types for display
-					$hourly_subscribers = $daily_subscribers_str;
-					if (strlen($hourly_subscribers) > 0 && strlen($weekly_subscribers_str) > 0)
-					{
-						$hourly_subscribers .= $this->language->lang('DIGESTS_COMMA') . $weekly_subscribers_str;
-					}
-					else
-					{
-						$hourly_subscribers .= $weekly_subscribers_str;
-					}
-					if (strlen($hourly_subscribers) > 0 && strlen($monthly_subscribers_str) > 0)
-					{
-						$hourly_subscribers .= $this->language->lang('DIGESTS_COMMA') . $monthly_subscribers_str;
-					}
-					else
-					{
-						$hourly_subscribers .= $monthly_subscribers_str;
-					}
+					$weekly_subscribers_str = (count($weekly_subscribers) > 0 ) ? implode($this->language->lang('DIGESTS_COMMA'), $weekly_subscribers) : '';
+					$monthly_subscribers_str = (count($monthly_subscribers) > 0 ) ? implode($this->language->lang('DIGESTS_COMMA'), $monthly_subscribers): '';
 
 					$this->template->assign_block_vars('digests_balance_load', array(
-						'HOUR'              => $this->helper->make_hour_string($i, $this->user->data['user_dateformat']),
-						'HOUR_COUNT'        => ($hour_count > $avg_per_hour) ? '<strong>' . $hour_count . '</strong>' : $hour_count,
-						'HOUR_UTC'        	=> $hour_utc,
-						'SUBSCRIBERS'		=> $hourly_subscribers,
+						'HOUR'              	=> $this->helper->make_hour_string($i, $this->user->data['user_dateformat']),
+						'HOUR_COUNT'        	=> ($hour_count > $avg_per_hour) ? '<strong>' . $hour_count . '</strong>' : $hour_count,
+						'HOUR_UTC'        		=> $hour_utc,
+						'SUBSCRIBERS_DAILY'		=> $daily_subscribers_str,
+						'SUBSCRIBERS_WEEKLY'	=> $weekly_subscribers_str,
+						'SUBSCRIBERS_MONTHLY'	=> $monthly_subscribers_str,
 					));
 				
 				}				
@@ -844,7 +827,7 @@ class main_module
 				$display_vars = array(
 					'title'	=> 'ACP_DIGESTS_MASS_SUBSCRIBE_UNSUBSCRIBE',
 					'vars'	=> array(
-						'legend1'								=> 'ACP_DIGESTS_MASS_SUBSCRIBE_UNSUBSCRIBE',
+						'legend1'												=> '',
 						'phpbbservices_digests_enable_subscribe_unsubscribe'	=> array('lang' => 'DIGESTS_ENABLE_SUBSCRIBE_UNSUBSCRIBE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'phpbbservices_digests_subscribe_all'					=> array('lang' => 'DIGESTS_SUBSCRIBE_ALL',					'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'phpbbservices_digests_include_admins'					=> array('lang' => 'DIGESTS_INCLUDE_ADMINS',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -856,7 +839,7 @@ class main_module
 				$display_vars = array(
 					'title'	=> 'ACP_DIGESTS_RESET_CRON_RUN_TIME',
 					'vars'	=> array(
-						'legend1'								=> 'ACP_DIGESTS_RESET_CRON_RUN_TIME',
+						'legend1'								=> '',
 						'phpbbservices_digests_enable_subscribe_unsubscribe'	=> array('lang' => 'DIGESTS_RESET_CRON_RUN_TIME',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 					)
 				);
@@ -1260,7 +1243,7 @@ class main_module
 			$balance = $this->request->variable('balance', constants::DIGESTS_ALL);
 			$balance_sql = ($balance == constants::DIGESTS_ALL) ?
 				"user_digest_type <> '" . constants::DIGESTS_NONE_VALUE . "'" :
-				"user_digest_type = '" . $balance . "'";
+				"user_digest_type = '" . addslashes($balance) . "'";
 
 			// Get the hours to balance. If -1 is among those hours returned, all hours are wanted. Others that may be selected are ignored.
  			$for_hours = $this->request->variable('for_hrs', array('' => 0));
@@ -1867,11 +1850,11 @@ class main_module
 			$result = $this->db->sql_query($sql);
 			$rowset = $this->db->sql_fetchrowset($result);
 			
+			// E-mail setup
+			$messenger = new \messenger();
+
 			foreach ($rowset as $row)
 			{
-				
-				// E-mail setup
-				$messenger = new \messenger();
 				
 				switch ($email_template)
 				{
@@ -1983,6 +1966,7 @@ class main_module
 				
 			}
 	
+			$messenger->save_queue(); // save queued emails for later delivery, if applicable
 			$this->db->sql_freeresult($result); // Query be gone!
 			
 		}
@@ -2019,15 +2003,14 @@ class main_module
 
 	}
 
-	function get_subscribers_for_hour ($hour, $tz_text)
+	function get_subscribers_for_hour ($hour, $offset_from_utc)
 	{
 
 		// Returns an array of subscribers for a given hour, keyed by digest type
 
 		$subscribers = array();
 
-		$hour_utc = $hour - $this->helper->make_tz_offset($tz_text);
-		$hour_utc = $this->helper->check_send_hour($hour_utc);
+		$hour_utc = $this->helper->check_send_hour($hour - $offset_from_utc);
 
 		$sql_array = array(
 			'SELECT'	=> 'username, user_digest_type',
